@@ -3081,7 +3081,6 @@ def refresh_dynamic_snapshot(base: Snapshot) -> Snapshot:
     Cached from the initial collect():
     - hardware models
     - SODIMM information
-    - displays
     - other effectively static snapshot fields
 
     Refreshed every watch cycle:
@@ -3095,7 +3094,8 @@ def refresh_dynamic_snapshot(base: Snapshot) -> Snapshot:
     - laptop battery percentage/state/power
     - peripheral battery list + percentages
     - connected Bluetooth device list
-    - Framework port contents, using the fresh external-storage/network state
+    - connected displays / DisplayPort state
+    - Framework port contents, using the fresh display/external-storage/network state
     """
     total, used, rpct = ram_usage()
 
@@ -3122,16 +3122,18 @@ def refresh_dynamic_snapshot(base: Snapshot) -> Snapshot:
         f_external = ex.submit(external_mounted_disks, lsblk_data)
         f_battery = ex.submit(laptop_battery)
         f_peripheral = ex.submit(peripheral_batteries, bt_records)
+        f_displays = ex.submit(displays)
 
         frpm, fpct, fmax = f_fan.result()
         external = f_external.result()
+        ds = f_displays.result()
 
-        # Port rendering depends on the current external-storage list, so submit
-        # it after storage discovery while the remaining collectors are still
-        # allowed to finish in parallel.
+        # Port rendering depends on the current display and external-storage
+        # state, so both are refreshed every watch cycle. This makes DP
+        # connect/disconnect events visible without restarting framefetch.
         f_ports = ex.submit(
             autodetect_ports,
-            base.displays,
+            ds,
             external,
             nmcli_out,
         )
@@ -3159,6 +3161,7 @@ def refresh_dynamic_snapshot(base: Snapshot) -> Snapshot:
             bt_devices=bluetooth_devices(bt_records),
 
             network=f_network.result(),
+            displays=ds,
             ports=f_ports.result(),
         )
 
