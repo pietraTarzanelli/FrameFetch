@@ -5,17 +5,18 @@ Framefetch configuration.
 Keep this file in the same directory as Framefetch_FW13_1.py.
 Edit values here to customize colors, thresholds, layout, ports, and watch behavior.
 """
-
+import random
 # =============================================================================
 # ANSI COLORS
 # =============================================================================
 
 RESET = "\033[0m"
-GREEN = "\033[32m"
+GREEN = "\033[32m" 
+TEAL = "\033[92m" #i refuse to call  this bright cyan 
 ORANGE = "\033[33m"
 RED = "\033[31m"
-BLUE = "\033[34m"
-CYAN = "\033[34m"  # Intentionally the same ANSI code as BLUE.
+BRIGHT_BLUE = "\033[94m"
+BLUE = "\033[34m"  
 MAGENTA = "\033[35m"
 DIM = "\033[2m"
 GOLD = "\033[38;5;220m"
@@ -220,7 +221,7 @@ UBUNTU_LOGO = [
 ]
 
 
-LOGO=CACHYOS_LOGO
+LOGO=CACHYOS_LOGO # I personally use random.choice([CACHYOS_LOGO,FW_LOGO])
 
 # Framework physical slot order for the current AI 300 board.
 # DMI enumeration observed on this machine is opposite to the physical drawing.
