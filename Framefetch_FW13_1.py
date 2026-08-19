@@ -50,8 +50,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 # config.py must be kept in the same directory as this script.
 from config import (
-    LOGO,RESET, GREEN, ORANGE, RED, BLUE, CYAN, MAGENTA, DIM, GOLD, BOLD,
-    PORT_WIDTH, RAM_BAR_WIDTH, SSD_BAR_WIDTH, BATTERY_BAR_WIDTH,
+    LOGO,RESET, PORT_WIDTH, RAM_BAR_WIDTH, SSD_BAR_WIDTH, BATTERY_BAR_WIDTH, #i removed the colors like GREEN ORANGE ETC from this bc the script didn´t actually use it 
     PERIPHERAL_BATTERY_BAR_WIDTH, LEFT_BOARD_GAP, LOGO_SHIFT_RIGHT,
     CPU_WARNING_PERCENT, CPU_CRITICAL_PERCENT,
     COLOR_CPU_OK, COLOR_CPU_WARNING, COLOR_CPU_CRITICAL,
