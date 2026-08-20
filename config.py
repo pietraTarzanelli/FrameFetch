@@ -122,14 +122,14 @@ COLOR_POWER_DELIVERY = GOLD
 # LOGO COLOR
 # =============================================================================
 
-# Logo selection is intentionally not configurable yet.
-# This version always uses the built-in Framework logo.
-LOGO_COLOR = CYAN
+# Logo selection is iconfigurable now. it was also before i just changed the comment
+LOGO_COLOR = TEAL #random.choice([color1, color2, so on]) #if you want it randomized, i personally use teal for now
 
 # "static" -> always use LOGO_COLOR in --watch
 # "cycle"  -> rotate through WATCH_LOGO_COLORS in --watch
 WATCH_LOGO_COLOR_MODE = "cycle"
-WATCH_LOGO_COLORS = [CYAN, ORANGE, GOLD, RED, GREEN]
+WATCH_LOGO_COLORS = [BLUE, ORANGE, GOLD, RED, GREEN, TEAL, BRIGHT_BLUE, MAGENTA] #added the other color in the rotation
+
 
 # =============================================================================
 # FRAMEWORK PORTS
@@ -221,7 +221,7 @@ UBUNTU_LOGO = [
 ]
 
 
-LOGO=CACHYOS_LOGO # I personally use random.choice([CACHYOS_LOGO,FW_LOGO])
+LOGO=random.choice([FW_LOGO,CACHYOS_LOGO]) #i'm on cachy so now i use this
 
 # Framework physical slot order for the current AI 300 board.
 # DMI enumeration observed on this machine is opposite to the physical drawing.
