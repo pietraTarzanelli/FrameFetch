@@ -11,12 +11,12 @@ import random
 # =============================================================================
 
 RESET = "\033[0m"
-GREEN = "\033[32m" 
-TEAL = "\033[92m" #i refuse to call  this bright cyan 
+GREEN = "\033[32m"
+TEAL = "\033[92m" #i refuse to call  this bright cyan
 ORANGE = "\033[33m"
 RED = "\033[31m"
 BRIGHT_BLUE = "\033[94m"
-BLUE = "\033[34m"  
+BLUE = "\033[34m"
 MAGENTA = "\033[35m"
 DIM = "\033[2m"
 GOLD = "\033[38;5;220m"
@@ -33,6 +33,30 @@ BATTERY_BAR_WIDTH = 20
 PERIPHERAL_BATTERY_BAR_WIDTH = 13
 LEFT_BOARD_GAP = 1
 LOGO_SHIFT_RIGHT = 5
+
+
+# =============================================================================
+# CLOCK
+# =============================================================================
+
+SHOW_CLOCK = True          # True = show clock, False = reserve the same blank space
+CLOCK_FORMAT = 24          # 24 or 12
+
+CLOCK_COLOR = TEAL
+
+# "static" -> always use CLOCK_COLOR in --watch
+# "cycle"  -> rotate through WATCH_CLOCK_COLORS in --watch
+WATCH_CLOCK_COLOR_MODE = "cycle"
+WATCH_CLOCK_COLORS = [
+    BLUE,
+    ORANGE,
+    GOLD,
+    RED,
+    GREEN,
+    TEAL,
+    BRIGHT_BLUE,
+    MAGENTA,
+]
 
 # =============================================================================
 # CPU USAGE
@@ -70,11 +94,11 @@ COLOR_GPU_CRITICAL = RED
 
 RAM_WARNING_PERCENT = 65
 RAM_CRITICAL_PERCENT = 80
-COLOR_RAM_OK = GREEN
+COLOR_RAM_OK = TEAL
 COLOR_RAM_WARNING = ORANGE
 COLOR_RAM_CRITICAL = RED
-COLOR_RAM_MODULE_SIZE = CYAN
-COLOR_RAM_MODULE_SPEED = CYAN
+COLOR_RAM_MODULE_SIZE = TEAL
+COLOR_RAM_MODULE_SPEED = TEAL
 
 # =============================================================================
 # SSD / STORAGE USAGE
@@ -82,7 +106,7 @@ COLOR_RAM_MODULE_SPEED = CYAN
 
 SSD_WARNING_PERCENT = 50
 SSD_CRITICAL_PERCENT = 80
-COLOR_SSD_OK = GREEN
+COLOR_SSD_OK = TEAL
 COLOR_SSD_WARNING = ORANGE
 COLOR_SSD_CRITICAL = RED
 
@@ -93,7 +117,7 @@ COLOR_SSD_CRITICAL = RED
 # Battery status works in the opposite direction: lower percentages are worse.
 BATTERY_CRITICAL_PERCENT = 20
 BATTERY_WARNING_PERCENT = 50
-COLOR_BATTERY_OK = GREEN
+COLOR_BATTERY_OK = TEAL
 COLOR_BATTERY_WARNING = ORANGE
 COLOR_BATTERY_CRITICAL = RED
 
@@ -106,15 +130,15 @@ FAN_WARNING_PERCENT = 70
 FAN_CRITICAL_PERCENT = 90
 COLOR_FAN_OK = GREEN
 COLOR_FAN_WARNING = ORANGE
-COLOR_FAN_CRITICAL = RED
+COLOR_FAN_CRITICAL = MAGENTA#RED
 
 # =============================================================================
 # CARD / FUNCTION COLORS
 # =============================================================================
 
-COLOR_WIFI = CYAN
-COLOR_BLUETOOTH = CYAN
-COLOR_ETHERNET = MAGENTA
+COLOR_WIFI = BLUE
+COLOR_BLUETOOTH = BLUE
+COLOR_ETHERNET = BLUE #MAGENTA
 COLOR_DISPLAYPORT = MAGENTA
 COLOR_POWER_DELIVERY = GOLD
 
@@ -122,14 +146,14 @@ COLOR_POWER_DELIVERY = GOLD
 # LOGO COLOR
 # =============================================================================
 
-# Logo selection is iconfigurable now. it was also before i just changed the comment
+# Logo selection is intentionally not configurable yet.
+# This version always uses the built-in Framework logo.
 LOGO_COLOR = TEAL #random.choice([color1, color2, so on]) #if you want it randomized, i personally use teal for now
 
 # "static" -> always use LOGO_COLOR in --watch
 # "cycle"  -> rotate through WATCH_LOGO_COLORS in --watch
 WATCH_LOGO_COLOR_MODE = "cycle"
 WATCH_LOGO_COLORS = [BLUE, ORANGE, GOLD, RED, GREEN, TEAL, BRIGHT_BLUE, MAGENTA] #added the other color in the rotation
-
 
 # =============================================================================
 # FRAMEWORK PORTS
@@ -221,7 +245,7 @@ UBUNTU_LOGO = [
 ]
 
 
-LOGO=random.choice([FW_LOGO,CACHYOS_LOGO]) #i'm on cachy so now i use this
+LOGO=random.choice([FW_LOGO,CACHYOS_LOGO])
 
 # Framework physical slot order for the current AI 300 board.
 # DMI enumeration observed on this machine is opposite to the physical drawing.
