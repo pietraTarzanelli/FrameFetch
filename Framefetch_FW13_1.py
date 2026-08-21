@@ -50,8 +50,10 @@ from concurrent.futures import ThreadPoolExecutor
 
 # config.py must be kept in the same directory as this script.
 from config import (
-    LOGO,RESET, PORT_WIDTH, RAM_BAR_WIDTH, SSD_BAR_WIDTH, BATTERY_BAR_WIDTH, #i removed the colors like GREEN ORANGE ETC from this bc the script didn´t actually use it 
+    LOGO,RESET, GREEN, ORANGE, RED, BLUE, MAGENTA, DIM, GOLD, BOLD,
+    PORT_WIDTH, RAM_BAR_WIDTH, SSD_BAR_WIDTH, BATTERY_BAR_WIDTH,
     PERIPHERAL_BATTERY_BAR_WIDTH, LEFT_BOARD_GAP, LOGO_SHIFT_RIGHT,
+    SHOW_CLOCK, CLOCK_FORMAT, CLOCK_COLOR, WATCH_CLOCK_COLOR_MODE, WATCH_CLOCK_COLORS,
     CPU_WARNING_PERCENT, CPU_CRITICAL_PERCENT,
     COLOR_CPU_OK, COLOR_CPU_WARNING, COLOR_CPU_CRITICAL,
     CPU_TEMP_WARNING, CPU_TEMP_CRITICAL,
@@ -2591,6 +2593,72 @@ def collect() -> Snapshot:
 #           .-%%%    #%@-
 
 
+
+
+def clock_lines(
+    width: int = 17,
+    clock_color: Optional[str] = None,
+) -> list[str]:
+
+    if clock_color is None:
+        clock_color = CLOCK_COLOR
+
+    """Render a compact HH.MM clock; reserve identical space when hidden."""
+    height = 4 if CLOCK_FORMAT == 12 else 3
+
+    if not SHOW_CLOCK:
+        return [" " * width for _ in range(height)]
+
+    now = time.localtime()
+    hour = now.tm_hour
+    suffix = ""
+
+    if CLOCK_FORMAT == 12:
+        suffix = "AM" if hour < 12 else "PM"
+        hour = hour % 12 or 12
+
+    digits = {
+        "0": (" _ ", "| |", "|_|"),
+        "1": ("   ", "  |", "  |"),
+        "2": (" _ ", " _|", "|_ "),
+        "3": (" _ ", " _|", " _|"),
+        "4": ("   ", "|_|", "  |"),
+        "5": (" _ ", "|_ ", " _|"),
+        "6": (" _ ", "|_ ", "|_|"),
+        "7": (" _ ", "  |", "  |"),
+        "8": (" _ ", "|_|", "|_|"),
+        "9": (" _ ", "|_|", " _|"),
+    }
+
+    text = f"{hour:02d}{now.tm_min:02d}"
+    rows = ["", "", ""]
+
+    # Separator between hours and minutes:
+    # no dot on the upper row, one dot on the other two.
+    separator = (" ", ".", ".")
+
+    for idx, ch in enumerate(text):
+        glyph = digits[ch]
+
+        for r in range(3):
+            rows[r] += glyph[r]
+
+        if idx == 1:
+            for r in range(3):
+                rows[r] += separator[r]
+
+    rows = [
+        ansi(fit(row, width, "center"), clock_color)
+        for row in rows
+    ]
+
+    if CLOCK_FORMAT == 12:
+        rows.append(
+            ansi(fit(suffix, width, "center"), clock_color)
+        )
+
+    return rows
+
 def colored_percent(value: Optional[float], kind: str) -> str:
     if value is None:
         return "N/A"
@@ -2695,9 +2763,17 @@ def built_in_display_line(s: Snapshot) -> tuple[str, str]:
     return f"{d.width}x{d.height}{hz}", '[Built-in],13"'
 
 
-def render(s: Snapshot, logo_color: Optional[str] = None) -> str:
+def render(
+    s: Snapshot,
+    logo_color: Optional[str] = None,
+    clock_color: Optional[str] = None,
+) -> str:
+
     if logo_color is None:
         logo_color = LOGO_COLOR
+
+    if clock_color is None:
+        clock_color = CLOCK_COLORR
 
     # ---------- colors / dynamic strings ----------
     rpct = s.ram_pct
@@ -2834,6 +2910,7 @@ def render(s: Snapshot, logo_color: Optional[str] = None) -> str:
     # LEFT_BOARD_GAP controls only the empty space between that column
     # and the motherboard.
     LEFT_PORT_WIDTH = 17
+    clock = clock_lines(clock_color=clock_color)
 
     left_gap = " " * LEFT_BOARD_GAP
 
@@ -2998,26 +3075,26 @@ def render(s: Snapshot, logo_color: Optional[str] = None) -> str:
     # -------------------------------------------------------------------------
 
     lines.append(
-        f"{left_empty}│             "
+        f"{clock[0]}{left_gap}│             "
         "┌───────────────────────────────────────┐"
         "                                              │"
     )
 
     lines.append(
-        f"{left_empty}│             "
+        f"{clock[1]}{left_gap}│             "
         f"│ {fit(disk_title,38)}│"
         "                                              │"
     )
 
     lines.append(
-        f"{left_empty}│             "
+        f"{clock[2]}{left_gap}│             "
         f"│{dbar}  {fit(dpct_txt,4)}  {fit(disk_usage,17)}│  "
         "┌──────────────────────────────────────┐    │"
         "┌───────────────────┐"
     )
 
     lines.append(
-        f"{left_empty}│             "
+        f"{(clock[3] if len(clock) > 3 else ' ' * LEFT_PORT_WIDTH)}{left_gap}│             "
         f"│{disk_footer}│  "
         f"│{fit(battery_header,38)}│    │"
         f"│{fit('Wi-Fi / Bluetooth',19)}│"
@@ -3179,6 +3256,7 @@ def watch_cached(initial: Snapshot, interval: float = 3.0) -> None:
     interval = max(0.20, float(interval))
     current = initial
     logo_index = -1
+    clock_index = -1
     first_frame = True
 
     # Hide cursor while the dashboard is running.
@@ -3202,8 +3280,20 @@ def watch_cached(initial: Snapshot, interval: float = 3.0) -> None:
             else:
                 frame_logo_color = LOGO_COLOR
 
+            if WATCH_CLOCK_COLOR_MODE.lower() == "cycle" and WATCH_CLOCK_COLORS:
+                clock_index = (clock_index + 1) % len(WATCH_CLOCK_COLORS)
+                frame_clock_color = WATCH_CLOCK_COLORS[clock_index]
+            else:
+                frame_clock_color = CLOCK_COLOR
+
             sys.stdout.write("\033[2J\033[H")
-            sys.stdout.write(render(current, logo_color=frame_logo_color))
+            sys.stdout.write(
+                render(
+                    current,
+                    logo_color=frame_logo_color,
+                    clock_color=frame_clock_color,
+                )
+            )
             sys.stdout.flush()
 
             elapsed = time.monotonic() - cycle_start
