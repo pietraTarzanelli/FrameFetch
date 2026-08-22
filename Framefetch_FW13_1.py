@@ -2773,7 +2773,7 @@ def render(
         logo_color = LOGO_COLOR
 
     if clock_color is None:
-        clock_color = CLOCK_COLORR
+        clock_color = CLOCK_COLOR
 
     # ---------- colors / dynamic strings ----------
     rpct = s.ram_pct
